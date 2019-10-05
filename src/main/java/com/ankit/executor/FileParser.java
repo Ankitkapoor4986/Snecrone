@@ -1,5 +1,6 @@
 package com.ankit.executor;
 
+import com.ankit.model.DataAndStatus;
 import com.ankit.model.DictionaryAttributes;
 
 import java.io.File;
@@ -22,22 +23,24 @@ public class FileParser {
     private ExecutorService service = Executors.newFixedThreadPool(numCores);
 
 
-    public Map<String, Map<String, DictionaryAttributes>> parseFile(File file) throws IOException {
+    public DataAndStatus parseFile(File file) throws IOException {
         List<String> lines = Files.readAllLines(file.toPath(), Charset.defaultCharset());
         Map<String, Map<String, DictionaryAttributes>> dictionarAttMappedbWord = new ConcurrentHashMap<>();
 
 
 
         Collection<List<String>> splitedLists = splitList(lines);
+        List<Future> futureList = new ArrayList<>();
         splitedLists.forEach(splittedList -> {
-            List<Future> futureList = new ArrayList<>();
+
             Runnable runnable = () -> {
                 splittedList.forEach(line -> dictionarAttMappedbWord.putAll(parseLine(line)));
             };
             Future<?> future = service.submit(runnable);
             futureList.add(future);
         });
-        return dictionarAttMappedbWord;
+
+        return new DataAndStatus(futureList,dictionarAttMappedbWord);
     }
 
     private Collection<List<String>> splitList(List<String> lines) {
