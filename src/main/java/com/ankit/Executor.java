@@ -1,7 +1,7 @@
 package com.ankit;
 
 import com.ankit.executor.DictionarySearcher;
-import com.ankit.executor.FileParser;
+import com.ankit.executor.TextFileParser;
 import com.ankit.model.DataAndStatus;
 
 import java.io.File;
@@ -12,7 +12,7 @@ public class Executor {
 
     public static void main(String[] args) throws IOException {
         File file = new File("/home/ankit/IdeaProjects/Reference/Snecrone/src/main/resources/test.txt");
-        FileParser fileParser = new FileParser();
+        TextFileParser fileParser = new TextFileParser();
         DataAndStatus dataAndStatus = fileParser.parseFile(file);
         dataAndStatus.getFutureList().forEach(future ->
         {
