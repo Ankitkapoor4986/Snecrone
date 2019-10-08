@@ -2,8 +2,8 @@ package com.ankit.model;
 
 public class DictionaryAttributes {
 
-    String word;
-    int pageNo;
+    private String word;
+    private int pageNo;
 
 
     public DictionaryAttributes(String word, int pageNo) {

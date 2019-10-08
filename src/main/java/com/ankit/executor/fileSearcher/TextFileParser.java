@@ -1,4 +1,4 @@
-package com.ankit.executor;
+package com.ankit.executor.fileSearcher;
 
 import com.ankit.model.DataAndStatus;
 import com.ankit.model.DictionaryAttributes;
@@ -7,7 +7,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -16,10 +18,10 @@ import java.util.stream.Stream;
 
 public class TextFileParser implements FileParser {
 
-    private File file;
 
 
-    private int numCores = 4;
+
+    private int numCores = Runtime.getRuntime().availableProcessors();
     private ExecutorService service = Executors.newFixedThreadPool(numCores);
 
 
@@ -28,25 +30,25 @@ public class TextFileParser implements FileParser {
         List<String> lines = Files.readAllLines(file.toPath(), Charset.defaultCharset());
         Map<String, Map<String, DictionaryAttributes>> dictionaryAttMappedbWord = new ConcurrentHashMap<>();
 
-        Collection<List<String>> splitedLists = splitList(lines);
-        List<Future> futureList = new ArrayList<>();
-        splitedLists.forEach(splittedList -> submitDictionaryTask(dictionaryAttMappedbWord, futureList, splittedList));
+        Collection<List<String>> dividedlinesChunks = divideLinesIntoChunk(lines);
+
+        List<Future> futureList = dividedlinesChunks.stream().map(dividedCollection -> submitDictionaryTask(dictionaryAttMappedbWord, dividedCollection))
+                .collect(Collectors.toList());
 
         return new DataAndStatus(futureList,dictionaryAttMappedbWord);
 
+
     }
 
-    private void submitDictionaryTask(Map<String, Map<String, DictionaryAttributes>> dictionaryAttMappedbWord,
-                                      List<Future> futureList, List<String> splittedlist) {
+    private Future submitDictionaryTask(Map<String, Map<String, DictionaryAttributes>> dictionaryAttMappedbWord,
+                                       List<String> splittedlist) {
         Runnable runnable = () -> splittedlist.forEach(line -> dictionaryAttMappedbWord.putAll(parseLine(line)));
-        Future<?> future = service.submit(runnable);
-        futureList.add(future);
+        return service.submit(runnable);
     }
 
-    private Collection<List<String>> splitList(List<String> lines) {
-        final int chunkSize = 5000;
+    private Collection<List<String>> divideLinesIntoChunk(List<String> lines) {
+        final int chunkSize = 1;
         final AtomicInteger counter = new AtomicInteger();
-
         return lines.stream()
                 .collect(Collectors.groupingBy(it -> counter.getAndIncrement() / chunkSize))
                 .values();

@@ -8,12 +8,12 @@ public class DataAndStatus {
 
 
     private List<Future> futureList;
-    private Map<String, Map<String, DictionaryAttributes>> dictionarAttMappedbWord;
+    private Map<String, Map<String, DictionaryAttributes>> dictionaryAttMappedByWord;
 
 
-    public DataAndStatus(List<Future> futureList, Map<String, Map<String, DictionaryAttributes>> dictionarAttMappedbWord) {
+    public DataAndStatus(List<Future> futureList, Map<String, Map<String, DictionaryAttributes>> dictionaryAttMappedByWord) {
         this.futureList = futureList;
-        this.dictionarAttMappedbWord = dictionarAttMappedbWord;
+        this.dictionaryAttMappedByWord = dictionaryAttMappedByWord;
 
     }
 
@@ -21,7 +21,7 @@ public class DataAndStatus {
         return futureList;
     }
 
-    public Map<String, Map<String, DictionaryAttributes>> getDictionarAttMappedbWord() {
-        return dictionarAttMappedbWord;
+    public Map<String, Map<String, DictionaryAttributes>> getDictionaryAttMappedByWord() {
+        return dictionaryAttMappedByWord;
     }
 }
